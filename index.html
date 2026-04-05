@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Grafik pH</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+  <h2>Grafik pH Realtime</h2>
+  <canvas id="chartPH" width="400" height="200"></canvas>
+
+  <p>pH Sekarang: <span id="phNow">-</span></p>
+
+<script>
+  // 🔥 CONFIG FIREBASE
+  const firebaseConfig = {
+    databaseURL: "https://hidroponik-29d8c-default-rtdb.firebaseio.com/"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // DATA
+  let labels = [];
+  let dataPH = [];
+
+  // CHART
+  const ctx = document.getElementById('chartPH').getContext('2d');
+
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'pH',
+        data: dataPH,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true
+    }
+  });
+
+  // 🔥 AMBIL DATA DARI FIREBASE
+  db.ref("iot_project/ph").on("value", (snapshot) => {
+    let ph = snapshot.val();
+    let time = new Date().toLocaleTimeString();
+
+    // tampilkan nilai sekarang
+    document.getElementById("phNow").innerText = ph;
+
+    // batasi 10 data
+    if (labels.length > 10) {
+      labels.shift();
+      dataPH.shift();
+    }
+
+    labels.push(time);
+    dataPH.push(ph);
+
+    chart.update();
+  });
+</script>
+
+</body>
+</html>
