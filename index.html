@@ -17,7 +17,7 @@
     }
 
     .container {
-      width: 400px;
+      width: 800px;
       margin: auto;
     }
   </style>
@@ -53,15 +53,15 @@
       datasets: [{
         label: 'pH',
         data: dataPH,
-        borderWidth: 2
+        borderWidth: 4
       }]
     },
     options: {
       responsive: true,
       scales: {
         y: {
-          min: 4,   // 🔥 batas bawah
-          max: 9    // 🔥 batas atas (skala tetap)
+          min: 1,   // 🔥 batas bawah
+          max: 14    // 🔥 batas atas (skala tetap)
         }
       }
     }
