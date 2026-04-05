@@ -9,17 +9,31 @@
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial;
+    }
+
+    .container {
+      width: 400px;
+      margin: auto;
+    }
+  </style>
 </head>
 
 <body>
 
   <h2>Grafik pH Realtime</h2>
-  <canvas id="chartPH" width="400" height="200"></canvas>
+
+  <div class="container">
+    <canvas id="chartPH"></canvas>
+  </div>
 
   <p>pH Sekarang: <span id="phNow">-</span></p>
 
 <script>
-  // 🔥 CONFIG FIREBASE
   const firebaseConfig = {
     databaseURL: "https://hidroponik-29d8c-default-rtdb.firebaseio.com/"
   };
@@ -27,11 +41,9 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // DATA
   let labels = [];
   let dataPH = [];
 
-  // CHART
   const ctx = document.getElementById('chartPH').getContext('2d');
 
   const chart = new Chart(ctx, {
@@ -45,19 +57,22 @@
       }]
     },
     options: {
-      responsive: true
+      responsive: true,
+      scales: {
+        y: {
+          min: 4,   // 🔥 batas bawah
+          max: 9    // 🔥 batas atas (skala tetap)
+        }
+      }
     }
   });
 
-  // 🔥 AMBIL DATA DARI FIREBASE
   db.ref("iot_project/ph").on("value", (snapshot) => {
     let ph = snapshot.val();
     let time = new Date().toLocaleTimeString();
 
-    // tampilkan nilai sekarang
     document.getElementById("phNow").innerText = ph;
 
-    // batasi 10 data
     if (labels.length > 10) {
       labels.shift();
       dataPH.shift();
